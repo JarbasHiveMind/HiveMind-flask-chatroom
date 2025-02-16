@@ -1,10 +1,13 @@
-import json
+import os
+import argparse
 
 from flask import Flask, render_template, request, redirect, url_for, \
     jsonify
 from ovos_bus_client.message import Message
 from ovos_utils.fakebus import FakeBus
-from pprint import pformat
+from ovos_utils.log import init_service_logger, LOG
+from ovos_utils.xdg_utils import xdg_state_home
+
 from hivemind_bus_client import HiveMessageBusClient
 
 platform = "JarbasFlaskChatRoomV0.2"
@@ -101,14 +104,30 @@ def send_message(room):
 
 
 def main():
-    import argparse
-
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", help="Chatroom port number",
                         default=8985)
     parser.add_argument("--host", help="Chatroom host",
                         default="0.0.0.0")
+    parser.add_argument('--log-level', type=str, default="DEBUG",
+                        help="Set the logging level (e.g., DEBUG, INFO, ERROR).")
+    parser.add_argument('--log-path', type=str, default=None, help="Set the directory path for logs.")
     args = parser.parse_args()
+
+    # Set log level
+    init_service_logger("flask-chat")
+    LOG.set_level(args.log_level)
+
+    # Set log path if provided, otherwise use default
+    if args.log_path:
+        LOG.base_path = args.log_path
+    else:
+        LOG.base_path = os.path.join(xdg_state_home(), "hivemind")
+
+    if LOG.base_path == "stdout":
+        LOG.info("logs printed to stdout (not saved to file)")
+    else:
+        LOG.info(f"log files can be found at: {LOG.base_path}/flask-chat.log")
 
     MessageHandler.connect()
     app.run(args.host, args.port, debug=True)

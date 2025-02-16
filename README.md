@@ -6,7 +6,7 @@ A multi-user Flask chatroom template for [HiveMind](https://github.com/OpenJarba
 
 This simple WebUI allows you to securely interact with your OpenVoiceOS instance through [HiveMind](https://github.com/OpenJarbas/HiveMind-core).
 
-![chatroom](./chatroom.png)
+![image](https://github.com/user-attachments/assets/2b75d944-25a1-4dac-887f-5aa8de7c840f)
 
 This is a reference implementation for integrating the HiveMind server-side without requiring users to provide credentials.
 
